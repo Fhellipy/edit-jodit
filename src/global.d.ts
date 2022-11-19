@@ -1,0 +1,1 @@
+declare module '@devlulcas/rehype-base64-image-swapper';
