@@ -1,9 +1,5 @@
 import JoditEditor from "jodit-react";
 import { useRef, useState } from "react";
-import rehypeParse from "rehype-parse";
-import { unified } from "unified";
-import rehypeStringify from "rehype-stringify/lib";
-import rehypeBase64ImageExtractor from "../absurdo";
 
 const colors = {
   greyscale: [
@@ -152,9 +148,6 @@ const config = {
   zIndex: 0,
   readonly: false,
   useSearch: false,
-  uploader: {
-    insertImageAsBase64URI: true,
-  },
   language: "pt_br",
   enter: "P",
   toolbarSticky: false,
@@ -193,17 +186,17 @@ function Editor() {
   };
 
   const upload = async () => {
-    const file = await unified()
-      .use(rehypeParse, { fragment: true })
-      .use(rehypeBase64ImageExtractor, {
-        handler: async ({ _, content }: any) => {
-          return "https://upload.wikimedia.org/wikipedia/commons/d/dc/Eurasian_wolf.JPG";
-        },
-      })
-      .use(rehypeStringify)
-      .process(value);
-
-    setValue(String(file));
+    const response = await fetch("http://localhost:3001", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ value: value }),
+    });
+    const data = await response.json();
+    setValue(data.result);
+    alert("Edição cadastrada com sucesso!");
+    setValue("");
   };
 
   return (
